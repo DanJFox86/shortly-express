@@ -23,6 +23,16 @@ class Users extends Model {
     return utils.compareHash(attempted, password, salt);
   }
 
+  login({username, password}) {
+    return super.login.call(this, username)
+      .then((login) => {
+        if (login === undefined) {
+          return false;
+        }
+        return this.compare(password, login.password, login.salt)
+      });
+  }
+
   /**
    * Creates a new user record with the given username and password.
    * This method creates a salt and hashes the password before storing

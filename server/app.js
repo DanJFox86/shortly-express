@@ -5,6 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+// const Model_models = new models.Model();
 
 const app = express();
 
@@ -17,17 +18,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 
 
-app.get('/', 
+app.get('/',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 (req, res, next) => {
   models.Links.getAll()
     .then(links => {
@@ -38,7 +39,7 @@ app.get('/links',
     });
 });
 
-app.post('/links', 
+app.post('/links',
 (req, res, next) => {
   var url = req.body.url;
   if (!models.Links.isValidUrl(url)) {
@@ -78,7 +79,34 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 
+app.post('/signup', (req, res) => {
+  var data = req.body;
+  return models.Users.create(data)
+    .then((message) => {
+      if (message === 'exists') {
+        res.redirect('/signup');
+      } else if (message === 'success') {
+        res.redirect('/');
+      }
+      res.send();
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+});
 
+app.post('/login', (req, res) => {
+  var data = req.body;
+  return models.Users.login(data)
+    .then((bool) => {
+      if (bool) {
+        res.redirect('/');
+      } else {
+        res.redirect('/login');
+      }
+      res.send();
+    })
+})
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail

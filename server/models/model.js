@@ -65,9 +65,38 @@ class Model {
    * containing the results of the query or is rejected with the the error that occurred
    * during the query.
    */
+
+  checkUsername(username) {
+    return executeQuery(`SELECT username FROM ${this.tablename}`)
+    .then((results)=> {
+      for (var i = 0; i < results.length; i++) {
+        if (results[i].username === username) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
   create(options) {
-    let queryString = `INSERT INTO ${this.tablename} SET ?`;
-    return executeQuery(queryString, options);
+    return this.checkUsername(options.username)
+    .then((bool) => {
+      if (bool) {
+        let queryString = `INSERT INTO ${this.tablename} SET ?`;
+        executeQuery(queryString, options);
+        return 'success';
+      } else {
+        return 'exists';
+      }
+    })
+  }
+
+  login(username) {
+    return executeQuery(`SELECT password, salt FROM ${this.tablename} WHERE username = "${username}"`)
+      .then((result) => {
+        console.log(result[0]);
+        return result[0];
+      })
   }
 
   /**
