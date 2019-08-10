@@ -111,7 +111,7 @@ class Model {
     let queryString = `INSERT INTO ${this.tablename} SET ?`;
     return executeQuery(queryString, options)
       .then((data)=> {
-        return options.hash;
+        return [data, options.hash];
       });
   }
 
