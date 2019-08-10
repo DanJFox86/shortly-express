@@ -29,7 +29,7 @@ class Users extends Model {
         if (login === undefined) {
           return false;
         }
-        return this.compare(password, login.password, login.salt)
+        return this.compare(password, login.password, login.salt);
       });
   }
 

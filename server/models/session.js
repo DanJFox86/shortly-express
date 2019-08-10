@@ -45,6 +45,10 @@ class Sessions extends Model {
       });
   }
 
+  checkHash(hash) {
+    return super.checkHash.call(this, hash);
+  }
+
   /**
    * Creates a new session. Within this function, a hash is randomly generated.
    * @returns {Promise<Object>} A promise that is fulfilled with the results of
@@ -53,7 +57,11 @@ class Sessions extends Model {
   create() {
     let data = utils.createRandom32String();
     let hash = utils.createHash(data);
-    return super.create.call(this, { hash });
+    return super.createCookie.call(this, { hash });
+  }
+
+  findUsername(hash) {
+
   }
 }
 

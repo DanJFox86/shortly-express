@@ -66,37 +66,60 @@ class Model {
    * during the query.
    */
 
+  checkHash(hash) {
+    return executeQuery(`SELECT hash FROM ${this.tablename}`)
+      .then((results)=> {
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].hash === hash) {
+            return false;
+          }
+        }
+        return true;
+      });
+  }
+
   checkUsername(username) {
     return executeQuery(`SELECT username FROM ${this.tablename}`)
-    .then((results)=> {
-      for (var i = 0; i < results.length; i++) {
-        if (results[i].username === username) {
-          return false;
+      .then((results)=> {
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].username === username) {
+            return false;
+          }
         }
-      }
-      return true;
-    });
+        return true;
+      });
   }
 
   create(options) {
-    return this.checkUsername(options.username)
-    .then((bool) => {
-      if (bool) {
-        let queryString = `INSERT INTO ${this.tablename} SET ?`;
-        executeQuery(queryString, options);
-        return 'success';
-      } else {
-        return 'exists';
-      }
-    })
+    let queryString = `INSERT INTO ${this.tablename} SET ?`;
+    return executeQuery(queryString, options);
+  }
+
+  // create(options) {
+  //   return this.get(options)
+  //     .then((result) => {
+  //       console.log(result);
+  //       if (!result) {
+  //         let queryString = `INSERT INTO ${this.tablename} SET ?`;
+  //         return executeQuery(queryString, options);
+  //       }
+  //       else return;
+  //     });
+  // }
+
+  createCookie(options) {
+    let queryString = `INSERT INTO ${this.tablename} SET ?`;
+    return executeQuery(queryString, options)
+      .then((data)=> {
+        return options.hash;
+      });
   }
 
   login(username) {
     return executeQuery(`SELECT password, salt FROM ${this.tablename} WHERE username = "${username}"`)
       .then((result) => {
-        console.log(result[0]);
         return result[0];
-      })
+      });
   }
 
   /**

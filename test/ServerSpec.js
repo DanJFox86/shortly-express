@@ -208,7 +208,7 @@ describe('', function() {
     });
   });
 
-  describe('Account Login:', function() {
+  xdescribe('Account Login:', function() {
 
     beforeEach(function(done) {
       var options = {
@@ -325,11 +325,11 @@ describe('', function() {
     });
   });
 
-  xdescribe('Express Middleware', function() {
+  describe('Express Middleware', function() {
     var cookieParser = require('../server/middleware/cookieParser.js');
     var createSession = require('../server/middleware/auth.js').createSession;
 
-    describe('Cookie Parser', function() {
+    xdescribe('Cookie Parser', function() {
 
       it('parses cookies and assigns an object of key-value pairs to a session property on the request', function(done) {
         var requestWithoutCookies = httpMocks.createRequest();
@@ -439,13 +439,12 @@ describe('', function() {
         var requestWithoutCookie = httpMocks.createRequest();
         var response = httpMocks.createResponse();
         var username = 'BillZito';
-
-        db.query('INSERT INTO users (username) VALUES (?)', username, function(error, results) {
+        db.query('INSERT INTO users (username) VALUES (?)', username, function(error, results) { // inserting username into table
           if (error) { return done(error); }
-          var userId = results.insertId;
+          var userId = results.insertId; // gets userId of inserted username
 
           createSession(requestWithoutCookie, response, function() {
-            var hash = requestWithoutCookie.session.hash;
+            var hash = requestWithoutCookie.session.hash; //our set hash
             db.query('UPDATE sessions SET userId = ? WHERE hash = ?', [userId, hash], function(error, result) {
 
               var secondResponse = httpMocks.createResponse();
