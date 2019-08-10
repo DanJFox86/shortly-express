@@ -95,25 +95,14 @@ class Model {
     return executeQuery(queryString, options);
   }
 
-  // create(options) {
-  //   return this.get(options)
-  //     .then((result) => {
-  //       console.log(result);
-  //       if (!result) {
-  //         let queryString = `INSERT INTO ${this.tablename} SET ?`;
-  //         return executeQuery(queryString, options);
-  //       }
-  //       else return;
+
+  // createCookie(options) {
+  //   let queryString = `INSERT INTO ${this.tablename} SET ?`;
+  //   return executeQuery(queryString, options)
+  //     .then((data)=> {
+  //       return [data, options.hash];
   //     });
   // }
-
-  createCookie(options) {
-    let queryString = `INSERT INTO ${this.tablename} SET ?`;
-    return executeQuery(queryString, options)
-      .then((data)=> {
-        return [data, options.hash];
-      });
-  }
 
   login(username) {
     return executeQuery(`SELECT password, salt FROM ${this.tablename} WHERE username = "${username}"`)

@@ -57,7 +57,7 @@ class Sessions extends Model {
   create() {
     let data = utils.createRandom32String();
     let hash = utils.createHash(data);
-    return super.createCookie.call(this, { hash });
+    return super.create.call(this, { hash });
   }
 
   findUsername(hash) {
