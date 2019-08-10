@@ -20,7 +20,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/',
   (req, res) => {
-    res.render('index');
+    return Auth.createSession(req,res, () => {
+      res.render('index');
+    })
   });
 
 app.get('/create',
@@ -82,9 +84,14 @@ app.post('/links',
 app.post('/signup', (req, res) => {
   var data = req.body;
   return models.Users.create(data)
-    .then(() => {
-      res.redirect('/');
-      res.send();
+  .then((user) => {
+    return Auth.createSession(req, res, () => {
+      return models.Sessions.update({hash: req.session.hash},{userId: user.insertId})
+        .then(()=> {
+          res.redirect('/');
+          res.send();
+        })
+      })
     })
     .catch((err) => {
       res.redirect('/signup');
@@ -104,6 +111,18 @@ app.post('/login', (req, res) => {
       res.send();
     });
 });
+
+app.get('/logout', (req, res) => {
+  console.log(req);
+  var hash = req.session.hash;
+  console.log('HASH', hash);
+  return models.Sessions.delete({hash: hash})
+    .then(() => {
+      res.clearCookie('shortlyid');
+      res.send();
+    })
+})
+
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
