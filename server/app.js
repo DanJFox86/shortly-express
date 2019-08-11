@@ -5,7 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
-// const Model_models = new models.Model();
+const cookieParser = require('./middleware/cookieParser');
 
 const app = express();
 
@@ -15,30 +15,52 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(cookieParser);
 
 
 
 app.get('/',
   (req, res) => {
     return Auth.createSession(req,res, () => {
-      res.render('index');
+      if (!req.cookies) {
+        res.redirect('/login');
+      } else {
+        res.render('index');
+      }
     })
   });
 
+app.get('/login', (req, res) => {
+  console.log('success login');
+  res.send();
+})
+
 app.get('/create',
   (req, res) => {
-    res.render('index');
+    return Auth.createSession(req,res, () => {
+      if (!req.cookies) {
+        res.redirect('/login');
+      } else {
+        res.render('index');
+      }
+    })
   });
 
 app.get('/links',
   (req, res, next) => {
-    models.Links.getAll()
-      .then(links => {
-        res.status(200).send(links);
-      })
-      .error(error => {
-        res.status(500).send(error);
-      });
+    return Auth.createSession(req,res, () => {
+      if (!req.cookies) {
+        res.redirect('/login');
+      } else {
+        models.Links.getAll()
+          .then(links => {
+            res.status(200).send(links);
+          })
+          .error(error => {
+            res.status(500).send(error);
+          });
+      }
+    })
   });
 
 app.post('/links',
@@ -113,14 +135,19 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  console.log(req);
-  var hash = req.session.hash;
-  console.log('HASH', hash);
-  return models.Sessions.delete({hash: hash})
+  return cookieParser(req, res, () => {
+    cookie = req.cookies[Object.keys(req.cookies)[0]];
+    return models.Sessions.delete({hash: cookie})
     .then(() => {
       res.clearCookie('shortlyid');
+      res.cookie('shortlyid', null);
       res.send();
-    })
+      });
+  })
+});
+
+app.post('/', (req, res) => {
+  console.log('posting');
 })
 
 

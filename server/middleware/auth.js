@@ -26,15 +26,17 @@ module.exports.createSession = (req, res, next) => {
                     next();
                   })
               })
+        } else {
+          req.session.userId = hashRow.userId;
+          return models.Users.get({id: hashRow.userId})
+          .then((user) => {
+            if (user) {
+              req.session.user = {username: user.username};
+            }
+            next();
+          })
+
         }
-        req.session.userId = hashRow.userId;
-        return models.Users.get({id: hashRow.userId})
-        .then((user) => {
-          if (user) {
-            req.session.user = {username: user.username};
-          }
-          next();
-        })
       })
   }
 };

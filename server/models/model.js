@@ -140,6 +140,7 @@ class Model {
   delete(options) {
     let parsedOptions = parseData(options);
     let queryString = `DELETE FROM ${this.tablename} WHERE ${parsedOptions.string.join(' AND ')}`;
+
     return executeQuery(queryString, parsedOptions.values);
   }
 

@@ -4,6 +4,7 @@ const parseCookies = (req, res, next) => {
     for (var i = 0; i < allCookies.length; i++) {
       allCookies[i] = allCookies[i].split('=');
     }
+    req.cookies = {};
     for (var i = 0; i < allCookies.length; i++) {
       req.cookies[allCookies[i][0].trim()] = allCookies[i][1].trim();
     }
