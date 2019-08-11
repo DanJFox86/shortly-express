@@ -21,7 +21,7 @@ app.use(cookieParser);
 
 app.get('/',
   (req, res) => {
-    return Auth.createSession(req,res, () => {
+    return Auth.createSession(req, res, () => {
       if (!req.cookies) {
         res.redirect('/login');
       } else {
@@ -31,9 +31,12 @@ app.get('/',
   });
 
 app.get('/login', (req, res) => {
-  console.log('success login');
-  res.send();
-})
+    res.render('login');
+  })
+
+app.get('/signup', (req, res) => {
+    res.render('signup');
+  })
 
 app.get('/create',
   (req, res) => {
@@ -41,7 +44,7 @@ app.get('/create',
       if (!req.cookies) {
         res.redirect('/login');
       } else {
-        res.render('index');
+        res.render('signup');
       }
     })
   });

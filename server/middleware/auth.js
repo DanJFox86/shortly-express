@@ -10,8 +10,8 @@ module.exports.createSession = (req, res, next) => {
             req.session = {hash: hashRow.hash};
             res.cookie('shortlyid', hashRow.hash);
             next();
-          })
-      })
+          });
+      });
   } else {
     var hash = req.cookies.shortlyid;
     req.session = {hash: hash};
@@ -19,25 +19,25 @@ module.exports.createSession = (req, res, next) => {
       .then((hashRow) => {
         if (hashRow === undefined) {
           return models.Sessions.create()
-              .then((data) => {
-                return models.Sessions.get({id: data.insertId})
-                  .then((hashRow2) => {
-                    res.cookie('shortlyid', hashRow2.hash);
-                    next();
-                  })
-              })
+            .then((data) => {
+              return models.Sessions.get({id: data.insertId})
+                .then((hashRow2) => {
+                  res.cookie('shortlyid', hashRow2.hash);
+                  next();
+                });
+            });
         } else {
           req.session.userId = hashRow.userId;
           return models.Users.get({id: hashRow.userId})
-          .then((user) => {
-            if (user) {
-              req.session.user = {username: user.username};
-            }
-            next();
-          })
+            .then((user) => {
+              if (user) {
+                req.session.user = {username: user.username};
+              }
+              next();
+            });
 
         }
-      })
+      });
   }
 };
 
